@@ -62,9 +62,13 @@ export function PlateCard({ plate, showExperiment = false }: PlateCardProps) {
         )}
         {plate.notes && <div className="text-sm text-muted-foreground mb-3 bg-muted/50 rounded p-2">{plate.notes}</div>}
 
-        <div className="flex gap-2">
-          <EditPlateDialog plate={plate} />
-          <CheckInOutDialog plate={plate} />
+        <div className="flex gap-2 w-full">
+          <div className="flex-1">
+            <EditPlateDialog plate={plate} />
+          </div>
+          <div className="flex-1">
+            <CheckInOutDialog plate={plate} />
+          </div>
         </div>
       </CardContent>
     </Card>

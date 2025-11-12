@@ -91,7 +91,7 @@ export function EditPlateDialog({ plate }: { plate: Plate }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="w-full bg-transparent">
           <Pencil className="h-4 w-4 mr-2" />
           Edit
         </Button>
