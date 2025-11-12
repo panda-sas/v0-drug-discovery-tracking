@@ -14,7 +14,9 @@ export default async function PlatesPage({
 
   let query = supabase
     .from("plates")
-    .select("*, experiment:experiments(name, project:projects(name))")
+    .select(
+      "*, experiment:experiments(name, project:projects(name)), library:libraries(name), scientist:scientists(name)",
+    )
     .order("created_at", { ascending: false })
 
   if (params.status) {

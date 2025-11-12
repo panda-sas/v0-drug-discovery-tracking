@@ -30,6 +30,16 @@ export interface Scientist {
   updated_at: string
 }
 
+export interface Library {
+  id: string
+  name: string
+  description: string | null
+  library_type: "compound" | "peptide" | "protein" | "dna" | "rna" | "other"
+  active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface Plate {
   id: string
   experiment_id: string
@@ -38,9 +48,13 @@ export interface Plate {
   status: "available" | "checked_out" | "in_use" | "completed" | "archived"
   location: string | null
   notes: string | null
+  library_id: string | null
+  scientist_id: string | null
   created_at: string
   updated_at: string
   experiment?: Experiment
+  library?: Library
+  scientist?: Scientist
 }
 
 export interface PlateTransaction {

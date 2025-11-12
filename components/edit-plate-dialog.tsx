@@ -17,18 +17,18 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus } from "lucide-react"
+import { Pencil } from "lucide-react"
 import { getSupabaseBrowserClient } from "@/lib/supabase-client"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import type { Library, Scientist } from "@/lib/types"
+import type { Plate, Library, Scientist } from "@/lib/types"
 
-export function CreatePlateDialog({ experimentId }: { experimentId: string }) {
+export function EditPlateDialog({ plate }: { plate: Plate }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [plateType, setPlateType] = useState("96-well")
-  const [libraryId, setLibraryId] = useState("")
-  const [scientistId, setScientistId] = useState("")
+  const [plateType, setPlateType] = useState(plate.plate_type)
+  const [libraryId, setLibraryId] = useState(plate.library_id || "none")
+  const [scientistId, setScientistId] = useState(plate.scientist_id || "none")
   const [libraries, setLibraries] = useState<Library[]>([])
   const [scientists, setScientists] = useState<Scientist[]>([])
   const router = useRouter()
@@ -58,16 +58,17 @@ export function CreatePlateDialog({ experimentId }: { experimentId: string }) {
     const formData = new FormData(e.currentTarget)
     const supabase = getSupabaseBrowserClient()
 
-    const { error } = await supabase.from("plates").insert({
-      experiment_id: experimentId,
-      plate_id: formData.get("plate_id") as string,
-      plate_type: plateType,
-      library_id: libraryId || null,
-      scientist_id: scientistId || null,
-      location: (formData.get("location") as string) || null,
-      notes: (formData.get("notes") as string) || null,
-      status: "available",
-    })
+    const { error } = await supabase
+      .from("plates")
+      .update({
+        plate_id: formData.get("plate_id") as string,
+        plate_type: plateType,
+        library_id: libraryId === "none" ? null : libraryId,
+        scientist_id: scientistId === "none" ? null : scientistId,
+        location: (formData.get("location") as string) || null,
+        notes: (formData.get("notes") as string) || null,
+      })
+      .eq("id", plate.id)
 
     if (error) {
       toast({
@@ -78,7 +79,7 @@ export function CreatePlateDialog({ experimentId }: { experimentId: string }) {
     } else {
       toast({
         title: "Success",
-        description: "Plate created successfully",
+        description: "Plate updated successfully",
       })
       setOpen(false)
       router.refresh()
@@ -90,22 +91,22 @@ export function CreatePlateDialog({ experimentId }: { experimentId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Plate
+        <Button variant="outline" size="sm">
+          <Pencil className="h-4 w-4 mr-2" />
+          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Create New Plate</DialogTitle>
-            <DialogDescription>Add a new plate to this experiment</DialogDescription>
+            <DialogTitle>Edit Plate</DialogTitle>
+            <DialogDescription>Update plate information</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="plate_id">Plate ID *</Label>
-              <Input id="plate_id" name="plate_id" required placeholder="e.g., PLT-001-001" />
+              <Input id="plate_id" name="plate_id" required defaultValue={plate.plate_id} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -125,7 +126,7 @@ export function CreatePlateDialog({ experimentId }: { experimentId: string }) {
 
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
-                <Input id="location" name="location" placeholder="e.g., Freezer 1, Shelf A" />
+                <Input id="location" name="location" defaultValue={plate.location || ""} />
               </div>
             </div>
 
@@ -167,7 +168,7 @@ export function CreatePlateDialog({ experimentId }: { experimentId: string }) {
 
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>
-              <Textarea id="notes" name="notes" placeholder="Optional notes about this plate" />
+              <Textarea id="notes" name="notes" defaultValue={plate.notes || ""} />
             </div>
           </div>
 
@@ -176,7 +177,7 @@ export function CreatePlateDialog({ experimentId }: { experimentId: string }) {
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Plate"}
+              {loading ? "Updating..." : "Update Plate"}
             </Button>
           </DialogFooter>
         </form>

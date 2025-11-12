@@ -3,7 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckInOutDialog } from "./check-in-out-dialog"
-import { MapPin } from "lucide-react"
+import { EditPlateDialog } from "./edit-plate-dialog"
+import { MapPin, LibraryIcon, User } from "lucide-react"
 import type { Plate } from "@/lib/types"
 
 interface PlateCardProps {
@@ -39,6 +40,20 @@ export function PlateCard({ plate, showExperiment = false }: PlateCardProps) {
         </div>
       </CardHeader>
       <CardContent>
+        {plate.library && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <LibraryIcon className="h-4 w-4" />
+            <span className="font-medium">{plate.library.name}</span>
+          </div>
+        )}
+
+        {plate.scientist && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <User className="h-4 w-4" />
+            <span className="font-medium">{plate.scientist.name}</span>
+          </div>
+        )}
+
         {plate.location && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
             <MapPin className="h-4 w-4" />
@@ -46,7 +61,11 @@ export function PlateCard({ plate, showExperiment = false }: PlateCardProps) {
           </div>
         )}
         {plate.notes && <div className="text-sm text-muted-foreground mb-3 bg-muted/50 rounded p-2">{plate.notes}</div>}
-        <CheckInOutDialog plate={plate} />
+
+        <div className="flex gap-2">
+          <EditPlateDialog plate={plate} />
+          <CheckInOutDialog plate={plate} />
+        </div>
       </CardContent>
     </Card>
   )
