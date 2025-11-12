@@ -3,6 +3,8 @@ import { NavBar } from "@/components/nav-bar"
 import { Card, CardContent } from "@/components/ui/card"
 import { PlateCard } from "@/components/plate-card"
 import { PlateFilters } from "@/components/plate-filters"
+import { CreateStandalonePlateDialog } from "@/components/create-standalone-plate-dialog"
+import { ImportPlatesDialog } from "@/components/import-plates-dialog"
 
 export default async function PlatesPage({
   searchParams,
@@ -38,9 +40,15 @@ export default async function PlatesPage({
       <NavBar />
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">All Plates</h1>
-          <p className="text-muted-foreground">Browse and filter all plates in the system</p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">All Plates</h1>
+            <p className="text-muted-foreground">Browse and filter all plates in the system</p>
+          </div>
+          <div className="flex gap-2">
+            <ImportPlatesDialog />
+            <CreateStandalonePlateDialog />
+          </div>
         </div>
 
         <PlateFilters />
