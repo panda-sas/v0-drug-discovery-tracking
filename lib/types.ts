@@ -40,6 +40,16 @@ export interface Library {
   updated_at: string
 }
 
+export interface Set {
+  id: string
+  name: string
+  description: string | null
+  set_type: "vendor" | "master" | "screening" | "hit_collection"
+  active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface Plate {
   id: string
   experiment_id: string
@@ -50,11 +60,13 @@ export interface Plate {
   notes: string | null
   library_id: string | null
   scientist_id: string | null
+  set_id: string | null // Added set_id reference
   created_at: string
   updated_at: string
   experiment?: Experiment
   library?: Library
   scientist?: Scientist
+  set?: Set // Added set relation
 }
 
 export interface PlateTransaction {

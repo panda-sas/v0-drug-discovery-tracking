@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { FlaskConical, Home, FolderOpen, Microscope, Users, ClipboardList, Library } from "lucide-react"
+import { FlaskConical, Home, FolderOpen, Microscope, Users, ClipboardList, Library, Layers } from "lucide-react"
 
 export function NavBar() {
   const pathname = usePathname()
@@ -38,6 +38,13 @@ export function NavBar() {
               <Link href="/plates">
                 <Microscope className="h-4 w-4 mr-2" />
                 Plates
+              </Link>
+            </Button>
+
+            <Button variant={isActive("/sets") ? "default" : "ghost"} size="sm" asChild>
+              <Link href="/sets">
+                <Layers className="h-4 w-4 mr-2" />
+                Sets
               </Link>
             </Button>
 

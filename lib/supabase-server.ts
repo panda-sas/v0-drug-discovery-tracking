@@ -19,3 +19,7 @@ export async function getSupabaseServerClient() {
     },
   })
 }
+
+export async function getSupabaseServer() {
+  return await getSupabaseServerClient()
+}

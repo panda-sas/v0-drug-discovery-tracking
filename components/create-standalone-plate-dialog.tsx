@@ -21,7 +21,7 @@ import { Plus } from "lucide-react"
 import { getSupabaseBrowserClient } from "@/lib/supabase-client"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import type { Experiment, Library, Scientist } from "@/lib/types"
+import type { Experiment, Library, Scientist, Set } from "@/lib/types"
 
 export function CreateStandalonePlateDialog() {
   const [open, setOpen] = useState(false)
@@ -30,9 +30,11 @@ export function CreateStandalonePlateDialog() {
   const [experimentId, setExperimentId] = useState("")
   const [libraryId, setLibraryId] = useState("")
   const [scientistId, setScientistId] = useState("")
+  const [setId, setSetId] = useState("")
   const [experiments, setExperiments] = useState<Experiment[]>([])
   const [libraries, setLibraries] = useState<Library[]>([])
   const [scientists, setScientists] = useState<Scientist[]>([])
+  const [sets, setSets] = useState<Set[]>([])
   const router = useRouter()
   const { toast } = useToast()
 
@@ -50,9 +52,12 @@ export function CreateStandalonePlateDialog() {
 
       const { data: sciData } = await supabase.from("scientists").select("*").eq("active", true).order("name")
 
+      const { data: setData } = await supabase.from("sets").select("*").eq("active", true).order("name")
+
       if (expData) setExperiments(expData)
       if (libData) setLibraries(libData)
       if (sciData) setScientists(sciData)
+      if (setData) setSets(setData)
     }
 
     if (open) {
@@ -73,6 +78,7 @@ export function CreateStandalonePlateDialog() {
       plate_type: plateType,
       library_id: libraryId || null,
       scientist_id: scientistId || null,
+      set_id: setId || null,
       location: (formData.get("location") as string) || null,
       notes: (formData.get("notes") as string) || null,
       status: "available",
@@ -94,6 +100,16 @@ export function CreateStandalonePlateDialog() {
     }
 
     setLoading(false)
+  }
+
+  const getSetTypeLabel = (setType: string) => {
+    const labels: Record<string, string> = {
+      vendor: "Vendor",
+      master: "Master (Mother)",
+      screening: "Screening (Daughter)",
+      hit_collection: "Hit Collection",
+    }
+    return labels[setType] || setType
   }
 
   return (
@@ -152,6 +168,23 @@ export function CreateStandalonePlateDialog() {
                 <Label htmlFor="location">Location</Label>
                 <Input id="location" name="location" placeholder="e.g., Freezer 1, Shelf A" />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="set_id">Set</Label>
+              <Select value={setId} onValueChange={setSetId}>
+                <SelectTrigger id="set_id">
+                  <SelectValue placeholder="Select set (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {sets.map((set) => (
+                    <SelectItem key={set.id} value={set.id}>
+                      {set.name} - {getSetTypeLabel(set.set_type)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
